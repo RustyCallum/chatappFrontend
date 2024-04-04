@@ -8,6 +8,7 @@ function LogInPage(){
     const [password, setPassword]= useState('');
 
     const navigate = useNavigate();
+    const [currentUser, setCurrentUser]= useState([]);
   
     async function handleClick(){
       const requestOptions = {
@@ -17,9 +18,14 @@ function LogInPage(){
         body: JSON.stringify({Username: username, Password: password})
       };
       await fetch('https://localhost:7094/api/User/Login', requestOptions)
-      .then(response => {const guid = response.headers.get('X-CSRF-TOKEN');
+      .then(response => {
+        const guid = response.headers.get('X-CSRF-TOKEN');
         localStorage.setItem('X-CSRF-TOKEN', JSON.stringify(guid));
-      });
+        return response.json()
+      })
+      .then(data => {
+        localStorage.setItem("Id", data.id)
+        localStorage.setItem("Username", data.userName)});
       navigate("/MainPage");
     }
   
