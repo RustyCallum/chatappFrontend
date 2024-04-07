@@ -10,15 +10,71 @@
   cursor: pointer;
   outline: none;
   /* -webkit-box-reflect: below 10px linear-gradient(to bottom, rgba(0,0,0,0.0), rgba(0,0,0,0.4)); */
+  position: absolute;
+  left:760px;
+  bottom:10px;
+}
+
+.Page-Header{
+  grid-column: 1/5;
+}
+
+.Page-Header-Right-Panel{
+  display:inline-flex;
+  float: right;
+}
+
+.Page-Header-Left-Panel{
+  display:inline-flex;
+  float: left;
+}
+
+.Grid-Container{
+  position: fixed;
+  display: inline-grid;
+  width: 90vw;
+  height: 95vh;
+  display:grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 15% 85%;
+  /*grid-template-areas:
+  'Page-Header Page-Header Page-Header Page-Header Page-Header Page-Header'
+  'Contact-List Contact-List Message-Box Message-Box Message-Box Message-Box'
+  'Contact-List Contact-List Message-Box Message-Box Message-Box Message-Box'
+  'Contact-List Contact-List Message-Box Message-Box Message-Box Message-Box'
+  'Contact-List Contact-List Message-Box Message-Box Message-Box Message-Box'
+  'Contact-List Contact-List Message-Box Message-Box Message-Box Message-Box'
+  'Contact-List Contact-List Message-Box Message-Box Message-Box Message-Box'
+  'Contact-List Contact-List Message-Box Message-Box Message-Box Message-Box'; */
+  column-gap: 50px;
+}
+
+.Grid-Container > div{
+  text-align: center;
 }
 
 .Contact-List{
+  grid-column: 1/2;
+  overflow-y: scroll;
+  /*grid-area: Contact-List; */
   position: relative;
-  right:40%;
+  background-color: rgb(27, 27, 51);
+  border-radius: 15px;
   text-align: left;
 }
 
+.Page-Header-Right-Panel-Buttons{
+  margin-left:50px;
+  cursor: pointer;
+}
+
+
+
 .Contact-Name{
+}
+
+.Text-Add-Contact{
+  color:white;
 }
 
 .Contact-Inside{
@@ -27,7 +83,7 @@
 }
 
 .Contact-Inside-Button{
-  width: 100%;
+  width: 90%;
   margin-left: 0px;
   margin-right: 20px;
   font-size: 1.2rem;
@@ -35,19 +91,54 @@
   outline: none;
   border-radius: 0.4rem;
   cursor: pointer;
-  text-transform: uppercase;
   background-color: inherit;
   color: rgb(234, 234, 234);
   font-weight: 700;
   transition: 0.3s;
+  
 }
 
 .Contact-Inside-Button:hover{
-  background-color: rgb(27, 27, 51);
+  background-color: rgb(44, 44, 86);
   color: rgb(4, 4, 38);
 }
 
 .Contact-Inside-Button-Text{
   float:left;
   color: white;
+}
+
+.Message-Box{
+  grid-column: 2/5;
+  /*grid-area: Message-Box;*/
+  position: relative;
+  border-radius: 15px;
+  background-color: rgb(27, 27, 51);
+  justify-content: left;
+}
+
+.Message-Input{
+  font-size: 14px;
+  width:85%;
+  padding-left: 2%;
+  float:left;
+  border: none;
+  outline: none;
+  background: rgb(44, 44, 86);
+  color:white;
+  margin-left: 1rem;
+  border-radius: 15px;
+  bottom:15px;
+  position: absolute;
+  left:0px;
+  height: 5%;
+}
+
+
+.modal {
+  
+}
+
+.popup-overlay {
+  background: rgba(0, 0, 0, 0.5);
 }
