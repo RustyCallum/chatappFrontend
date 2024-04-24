@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import './MainPage.css';
 import { Navigate, useNavigate } from "react-router-dom";
 import Popup from 'reactjs-popup';
@@ -7,14 +7,25 @@ function MainPage() {
 
 	const [messageBody, setMessageBody]= useState('');
 	const [contacts, setContacts] = useState([]);
-	const [recipent, setRecipent] = useState(0);
+	const [recipent, setRecipent] = useState('');
 	const [searchedPerson, setSearchedPerson] = useState('');
 	const [returnedPeople, setReturnedPeople] = useState([]);
+	const [messagesList, setMessagesList] = useState([]);
 	
 	const navigate = useNavigate();
 
+	const messageListEndRef = useRef(null);
+
 	const getRecipent = (id) => {
 		setRecipent(id);
+	}
+
+	function addMessageToList(someData) {
+		setMessagesList(someData);
+	}
+
+	const scrollToMessagesBottom = () => {
+		messageListEndRef.current?.scrollIntoView()
 	}
 
 	function handleLogOut() {
@@ -31,7 +42,7 @@ function MainPage() {
 		}
 		fetch(`https://localhost:7094/api/User/ContactList`, addContactRequestOptions)
 		.then(response => response.json())
-		.then(data => contacts.concat({ppl}))
+		.then(data => setContacts(oldList => [...oldList, ppl]))
 	}
 
 	function onEnterSearch(e){
@@ -63,17 +74,48 @@ function MainPage() {
 		.then(data => setContacts(data));
 	}
 
+	function getMessages() {
+		const messageRequestOptions = {
+			method: 'GET',
+			headers: {'Content-Type': 'application/json' },
+			credentials: 'include',
+		}
+		fetch(`https://localhost:7094/api/Messages/${recipent}`, messageRequestOptions)
+		.then(response => response.json())
+		.then(data => setMessagesList(data))
+		.then();
+	}
+
+	function messageSend(options){
+		fetch('https://localhost:7094/api/Message', options)
+		.then(response => response.json())
+		.then(data => setMessagesList(oldList => [...oldList, data]));
+	}
+
 	function handleMessageSend(){
+		
 		const requestOptions = {
 		  method: 'POST',
 		  headers: {'Content-Type': 'application/json' },
 		  credentials: 'include',
-		  body: JSON.stringify({recieverId: 0, messageBody: messageBody, Guid: JSON.parse(localStorage.getItem('X-CSRF-TOKEN'))})
+		  body: JSON.stringify({LoggedUserId: localStorage.getItem("Id"), secondaryUserId: recipent, messageBody: messageBody, Guid: JSON.parse(localStorage.getItem('X-CSRF-TOKEN'))})
 		};
-		fetch('https://localhost:7094/api/Message', requestOptions);
+
+		messageSend(requestOptions);
+		scrollToMessagesBottom()
 	}
 
-	useEffect(() => {getContacts()}, []);
+	useEffect(() => {
+		getContacts();	
+	}, []);
+
+	useEffect(() => {
+		if(recipent != '') 
+		{
+			getMessages()
+			scrollToMessagesBottom();
+		}
+	}, [recipent])
 
 	return (
 		<header className="App-header">
@@ -116,7 +158,7 @@ function MainPage() {
 					</div>
 					{contacts.map(contact => 
 						<div className='Contact-Inside'>
-							<button className='Contact-Inside-Button' onClick={() => setRecipent(contact.id)}>
+							<button className='Contact-Inside-Button' onClick={() => {setRecipent(contact.id)}}>
 								<p className='Contact-Inside-Button-Text'>{contact.id}, {contact.name}</p>
 							</button>
 						</div>
@@ -127,16 +169,33 @@ function MainPage() {
 
 					<p>{recipent}</p>
 
-					<input
-					type="text"
-					htmlFor="messageBody"
-					name="messageBody"
-					className="Message-Input"
-					placeholder="Message..."
-					value={messageBody}
-					onChange={(text)=> setMessageBody(text.target.value)} />
+					<div className='Message-Display'>
+						{messagesList.map(message => 
+							{
+								if((localStorage.getItem('Id') == message.loggedUserId) == true)
+								{
+									return <p className='Right-Message'>{message.messageBody}</p>
+								}
+								else
+								{
+									return <p className='Left-Message'>{message.messageBody}</p>
+								}
+							}
+						)}
+						<div ref = {messageListEndRef}/>
+					</div>
+					<div>
+						<input
+						type="text"
+						htmlFor="messageBody"
+						name="messageBody"
+						className="Message-Input"
+						placeholder="Message..."
+						value={messageBody}
+						onChange={(text)=> setMessageBody(text.target.value)} />
 
-					<button onClick={handleMessageSend} className="btn" ><img src={require("../MainPage/SendImage.png")} style= {{width:"100%" }}/> </button>
+						<button onClick={handleMessageSend} className="btn" ><img src={require("../MainPage/SendImage.png")} style= {{width:"100%" }}/> </button>
+					</div>
 				</div>
 			</div>
 		</header>
